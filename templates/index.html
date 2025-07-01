@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <body>
+            
+        
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Chat with Lumi</title>
+        <style>
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #3c4099;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                color: #ccc;
+            }
+            .chat-container {
+                width: 400px;
+                background-color: #2c2c2c;
+                border-radius: 10px;
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+            .chat-header {
+                background-color: #f6c0ff;
+                color: #000000;
+                padding: 15px;
+                text-align: center;
+                font-size: 20px;
+                border-bottom: 2px solid #555;
+            }
+            .chat-messages {
+                flex: 1;
+                padding: 15px;
+                overflow-y: auto;
+                background-color: #ffffff;
+            }
+            .chat-input {
+                display: flex;
+                border-top: 2px solid #555;
+            }
+            .chat-input input {
+                flex: 1;
+                padding: 12px;
+                border: none;
+                outline: none;
+                background-color: #f6c0ff;
+                color: #000000;
+            }
+            .chat-input input::placeholder {
+                color: #000000;
+            }
+            .chat-input button {
+                padding: 12px 20px;
+                background-color: #ffffff; /* Changed from blue to a lighter black */
+                color: #000000;
+                border: none;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            .chat-input button:hover {
+                background-color: #3c4099; /* Slightly lighter on hover */
+            }
+            .message {
+                margin-bottom: 15px;
+                transition: opacity 0.3s ease;
+                opacity: 0; /* Start with 0 opacity for transition effect */
+                transform: translateY(
+                    10px
+                ); /* Start with a small translation for effect */
+                animation: fadeIn 0.5s forwards;
+            }
+            @keyframes fadeIn {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .message.user {
+                text-align: right;
+            }
+            .message.bot {
+                text-align: left;
+            }
+            .message p {
+                display: inline-block;
+                padding: 10px 15px;
+                border-radius: 18px;
+                max-width: 80%;
+                position: relative;
+            }
+            .message.user p {
+                background-color: #ee3737; /* Changed from blue to a lighter black */
+                color: #fff;
+            }
+            .message.bot p {
+                background-color: #ffffff;
+                color: black;
+            }
+        </style>
+    </head>
+    <div class="mant">
+        <div class="chat-container">
+            <div class="chat-header">Chat with Lumi</div>
+            <div class="chat-messages" id="chat-messages">
+                <!-- Chat messages will be appended here -->
+            </div>
+            <div class="chat-input">
+                <input
+                    type="text"
+                    id="chat-input"
+                    placeholder="Tell your dream here..."
+                />
+                <button onclick="sendMessage()">Interprete</button>
+            </div>
+        </div>
+
+        <script>
+            async function sendMessage() {
+                const input = document.getElementById("chat-input");
+                const message = input.value.trim();
+                if (message === "") return;
+
+                // Append user message to chat
+                appendMessage("user", message);
+
+                // Clear input
+                input.value = "";
+
+                // Send message to backend
+                const response = await fetch("http://127.0.0.1:5000/chat", {
+                    //HERE CHANGE THE ADRESS
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ message }),
+                });
+
+                const data = await response.json();
+                console.log(data);  
+                appendMessage("bot", data.reply);
+            }
+
+            function appendMessage(sender, message) {
+                const chatMessages = document.getElementById("chat-messages");
+                const messageElement = document.createElement("div");
+                messageElement.classList.add("message", sender);
+                messageElement.innerHTML = `<p>${message}</p>`;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        </script>
+    </div>
+    </body>
+</html>
