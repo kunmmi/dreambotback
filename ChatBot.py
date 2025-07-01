@@ -31,5 +31,7 @@ def chat():
     bot_reply = response.choices[0].message.content.strip()
     return jsonify({'reply': bot_reply})
 
-if __name__ == '__main__':
-    app.run(debug=False)
+if __name__ == "__main__":
+    import os
+    port = int(os.environ.get("PORT", 5000))  # use Render's port or default to 5000
+    app.run(host="0.0.0.0", port=port)
